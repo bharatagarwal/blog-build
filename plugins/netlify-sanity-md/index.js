@@ -33,6 +33,10 @@ module.exports = {
       }
     });
 
+    
+
+
+
     try {
       await client
         .fetch(`*[_type == "post"]{categories[]->{title}, date, slug, title, body}`)
@@ -42,22 +46,28 @@ module.exports = {
             let frontmatter = "---";
             Object.keys(post).forEach((field) => {
               if (field === "slug") {
-                return (frontmatter += `\n${field}: "${post.slug.current}"`);
+                // Check if slug is not null, otherwise default to an empty string or a placeholder
+                const slug = post.slug ? post.slug.current : 'no-slug';
+                frontmatter += `\n${field}: "${slug}"`;
               } else if (field === "categories") {
-                return (frontmatter += `\n${field}: [${post.categories.map(
-                  (cat) => `"${cat.title}"`
-                )}]`);
+                // Check if categories is not null, otherwise default to an empty array
+                const categories = post.categories ? post.categories.map((cat) => `"${cat.title}"`).join(", ") : '';
+                frontmatter += `\n${field}: [${categories}]`;
+              } else if (field === "date") {
+                // Check if date is not null, otherwise default to a placeholder or current date
+                const date = post.date ? post.date : 'no-date';
+                frontmatter += `\n${field}: "${date}"`;
               } else if (field === "body") {
-                return;
+                // Skip body here, it will be processed separately
               } else {
                 frontmatter += `\n${field}: "${post[field]}"`;
               }
             });
             frontmatter += "\n---\n\n";
-
-            const wholePost = `${frontmatter}${toMarkdown(post.body, {
-              serializers,
-            })}`;
+        
+            // Convert the body to Markdown
+            const markdownBody = toMarkdown(post.body, { serializers });
+            const wholePost = `${frontmatter}${markdownBody}`;
 
             const filePath = `./content/${post.slug.current}.md`;
             fs.outputFile(filePath, wholePost, function (err, data) {
@@ -65,6 +75,8 @@ module.exports = {
                 return console.log(err);
               }
             });
+
+            console.log(`Created: ${filePath}`);
           })
         );
     } catch (error) {
