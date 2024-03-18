@@ -1,0 +1,16 @@
+{
+  "name": "web",
+  "version": "1.0.0",
+  "description": "A barebones repo of a Hugo site and a Sanity studio. For following along with a tutorial on [Sanity.io](https://sanity.io).",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@sanity/block-content-to-markdown": "^0.0.5",
+    "fs-extra": "^11.2.0"
+  }
+}
